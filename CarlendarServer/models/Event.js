@@ -6,7 +6,20 @@ const EventSchema = new mongoose.Schema({
   description: "String",
   start_time: "Date",
   end_time: "Date",
-  day: { Date: "Date", required: true },
+  day: {
+    type: Date,
+    required: true,
+    set: (date) => {
+      const formattedDate = new Date(date);
+      // Định dạng ngày thành "yyyy-mm-dd"
+      return new Date(
+        formattedDate.getFullYear(),
+        formattedDate.getMonth(),
+        formattedDate.getDate()
+      );
+    },
+  },
+  type: "String",
   layout: "String",
   location: "String",
   created_at: "Date",

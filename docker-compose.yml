@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+  frontend:
+    build:
+      context: ./front-end # Đường dẫn đến thư mục frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000" # Cổng mà ứng dụng frontend sẽ chạy
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./CarlendarServer # Đường dẫn đến thư mục backend
+      dockerfile: Dockerfile
+    ports:
+      - "4000:4000" # Cổng mà ứng dụng backend sẽ chạy
+    environment:
+      - DATABASE_URL=mongodb://mongo:27017/calendar # Thay đổi tên cơ sở dữ liệu nếu cần
+    volumes:
+      - ./backend:/usr/src/app # Giữ đồng bộ mã nguồn trong quá trình phát triển
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80" # Cổng mà Nginx sẽ chạy
+    volumes:
+      - ./proxy/nginx.conf:/etc/nginx/nginx.conf # Đường dẫn đến file cấu hình Nginx
+    depends_on:
+      - frontend
+      - backend
+
+  mongo:
+    image: mongo:latest
+    volumes:
+      - mongo-data:/data/db # Duy trì dữ liệu MongoDB
+
+volumes:
+  mongo-data:
